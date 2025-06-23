@@ -1,0 +1,647 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "User Management TS",
+    "description": "This API Specification for User Management System",
+    "contact": {
+      "email": "mireilleirafasha@gmail.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "http://www.opensource.org/licenses/mit"
+    },
+    "version": "1.0.0"
+  },
+  "externalDocs": {
+    "url": "https://github.com/mireilleIrafasha25/Nodejs_Ts_Pro.git",
+    "description": "Find more info here"
+  },
+  "basePath": "/",
+  "schemes": ["https", "http"],
+  "tags": [
+    {
+      "name": "User Management System",
+      "description": "Operation pertaining to User Management"
+    }
+  ],
+    "securityDefinitions": {
+  "bearerAuth": {
+    "type": "apiKey",
+    "name": "Authorization",
+    "in": "header"
+  }
+},
+  "paths": {
+    "/user/Test": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Test",
+        "description": "Test",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        }
+      }
+    },
+    "/user/signup": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Create a new user",
+        "description": "Create a new user",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "User created",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad request - Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/signin": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Sign in a user",
+        "description": "Sign in a user",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Login"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User logged in successfully",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad request - Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/listAll": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get all users",
+        "description": "Returns all the users",
+        "responses": {
+          "200": {
+            "description": "All the users",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/User"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/validateOtp": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Verify a user",
+        "description": "Verify a user",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Verify"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OTP was verified",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad request - Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/forgotPassword": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Forgot password",
+        "description": "Forgot password",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ForgotPassword"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Forgot password was successful",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad request - Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/user/resetPassword/{token}/{id}": {
+      "post": {
+        "tags": ["Users"],
+        "summary": "Reset password",
+        "description": "Reset password",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ResetPassword"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Password was reset successfully",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad request - Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+        "/user/updateUser/{id}": {
+      "put": {
+        "tags": ["Users"],
+        "summary": "update User",
+        "description": "Update User data",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User was updated successfully",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad request - Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+        "/user/deleteUser/{id}": {
+      "delete": {
+        "tags": ["Users"],
+        "summary": "delete user",
+        "description": "delete user from database",
+        "parameters": [
+          
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name":"Authorization",
+            "in":"header",
+            "required":true,
+            "type":"string",
+            "description":"Bearer token (format: Bearer <your_token>)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "user was deleted successfully",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad request - Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+        "/user/findUserById/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Reset password",
+        "description": "Reset password",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "User was retrieved",
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
+          },
+          "400": {
+            "description": "Bad request - Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blog/addBlog":{
+      "post": {
+        "tags": [
+          "Blogs"
+        ],
+        "summary": "Add a new blog",
+        "description": "add a new blog with  the provided details",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Bearer token (format: Bearer <your_token>)"
+          },
+          {
+            "name": "name",
+            "in": "formData",
+            "required": true,
+            "type":"string"
+            
+          },
+          {
+            "name": "image",
+            "in": "formData",
+            "required": true,
+            "type":"file"
+           
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "required": true,
+            "type":"string"
+           
+          }
+          
+        ],
+        "responses": {
+          "201": {
+            "description": "Blog added successfully"
+           
+          },
+          "401": {
+            "description": "Unauthorized - No Token Provided"
+          }
+        }
+      }
+    },
+    "/blog/listBlog":{
+      "get": {
+        "tags": [
+          "Blogs"
+        ],
+        "summary": "List All blogs",
+        "description": "display all blogs from database",
+        "responses": {
+          "200": {
+            "description": "All Blogs displayed" 
+          }
+        }
+      }
+    },
+        "/blog/getBlogById/{id}": {
+      "get": {
+        "tags": ["Blogs"],
+        "summary": "Get Blog by ID",
+        "description": " GET blog using its id",
+        "parameters": [
+          
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "blog was retrieved successfully",
+            "schema": {
+              "$ref": "#/definitions/Blog"
+            }
+          },
+          "400": {
+            "description": "Bad request - Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/blog/updateBlog/{id}":{
+      "put": {
+        "tags": [
+          "Blogs"
+        ],
+        "summary": "update blog",
+        "description": "update blog with  the provided details",
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "required": true,
+            "type": "string",
+            "description": "Bearer token (format: Bearer <your_token>)"
+          },
+          {
+            "name": "name",
+            "in": "formData",
+            "required": false,
+            "type":"string"
+            
+          },
+          {
+            "name": "image",
+            "in": "formData",
+            "required": false,
+            "type":"file"
+           
+          },
+          {
+            "name": "description",
+            "in": "formData",
+            "required": false,
+            "type":"string"
+           
+          }
+          
+        ],
+        "responses": {
+          "200": {
+            "description": "Blog updated successfully"
+           
+          },
+          "401": {
+            "description": "Unauthorized - No Token Provided"
+          }
+        }
+      }
+    },
+
+        "/blog/deleteBlog/{id}": {
+      "delete": {
+        "tags": ["Blogs"],
+        "summary": "delete blog",
+        "description": "only admin allowed to delete blog from database",
+        "parameters": [
+          
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name":"Authorization",
+            "in":"header",
+            "required":true,
+            "type":"string",
+            "description":"Bearer token (format: Bearer <your_token>)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "blog was deleted successfully",
+            "schema": {
+              "$ref": "#/definitions/Blog"
+            }
+          },
+          "400": {
+            "description": "Bad request - Validation error",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "User": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "confirmPassword": {
+          "type": "string"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["admin", "user"],
+          "default": "user"
+        }
+      },
+      "required": ["name", "email", "password", "confirmPassword", "role"]
+    },
+    "Blog":{
+      "type":"object",
+      "properties":{
+        "name":{
+          "type":"string"
+        },
+        "description":{
+          "type":"string"
+        },
+        "image":{
+          "type":"string"
+        }
+      }
+    },
+    "Login": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": ["email", "password"]
+    },
+    "Verify": {
+      "type": "object",
+      "properties": {
+        "otp": {
+          "type": "number"
+        }
+      },
+      "required": ["otp", "email"]
+    },
+    "ForgotPassword": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      },
+      "required": ["email"]
+    },
+    "ResetPassword": {
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": ["password"]
+    }
+  }
+}
