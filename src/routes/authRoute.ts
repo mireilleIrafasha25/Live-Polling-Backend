@@ -11,7 +11,7 @@ import {
   resetPasswordSchema 
 } from '../schemas/auth.schemas';
 
-import {authenticateToken,authorize,authenticateTokenSpecialUser} from "../middleware/authenthicateToken"
+import {authenticateToken,authorize} from "../middleware/authenthicateToken"
 
 const router: Router = express.Router();
 router.get("/Test",test)

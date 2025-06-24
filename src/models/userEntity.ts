@@ -4,13 +4,11 @@ import {
   CreateDateColumn, UpdateDateColumn, Unique,OneToMany,OneToOne
 } from 'typeorm';
 import { Token } from './Token'
+import { Poll } from './poll';
 import { UserInfo } from 'os';
 export enum UserRole {
   USER = 'user',
-  ADMIN = 'admin',
-  NUTRITIONIST = 'nutritionist',
-  COACH = 'coach',
-  RESTAURANT_OWNER = 'restaurantOwner',
+  ADMIN = 'admin'
 }
  
 
@@ -54,4 +52,6 @@ role!: UserRole;
 
  @OneToMany(() => Token, (token) => token.user, { cascade: true })
   tokens!: Token[];
+  @OneToMany(() => Poll, (poll) => poll.createdBy, { cascade: true })
+  polls!: Poll[];
 }

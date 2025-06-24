@@ -8,9 +8,14 @@ import swaggerUi from "swagger-ui-express";
 import fs from "fs/promises"
 import path from 'path';
 import cors from "cors"
+import {initSocket} from "./socket"
+import http from "http"
+import { pollExpirationJob } from './utils/pollExpirationDate';
 dotenv.config();
 
 const app: Express = express();
+const server=http.createServer()
+initSocket(server);
 const PORT=Number(process.env.PORT);
 
 async function loadDocumentation() {
@@ -56,7 +61,8 @@ const startServer = async () => {
     try {
       // Initialize db connection
       await InitializeDatabase();
-      
+      //check pool expiration
+      pollExpirationJob();
       // Start Express server
      app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on http://0.0.0.0:${PORT}`);

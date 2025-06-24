@@ -1,6 +1,7 @@
 import { DataSource } from "typeorm";
 import { User } from "../models/userEntity";
 import { Token } from "../models/Token";
+import { Poll } from "../models/poll";
 import * as dotenv from "dotenv";
 dotenv.config();
 export const AppDataSource=new DataSource(
@@ -13,7 +14,7 @@ host:"localhost",
  database: "Live_Poll",
  synchronize: true,
  logging: ["error"],
- entities: [User,Token],
+ entities: [User,Token,Poll],
  migrations: [],
  subscribers: [],
 })
