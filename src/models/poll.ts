@@ -13,8 +13,8 @@ export class Poll {
   @Column()
   description!: string;
 
-  @Column("text", { array: true })
-  options!: string[];
+ @Column({ type: 'jsonb' })
+  options!: { name: string, voteCount: number }[];
 
   @Column({ unique: true })
   code!: string;

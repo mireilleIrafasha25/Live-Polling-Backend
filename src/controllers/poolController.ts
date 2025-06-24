@@ -5,21 +5,18 @@ import { Poll } from '../models/poll';
 import { generatePollCode } from '../utils/generateCode';
 import { User, UserRole } from '../models/userEntity';
 import { Admin } from 'typeorm';
+import asyncWrapper from '../middleware/async';
+import { size } from 'zod/v4';
 
 const userRepository = AppDataSource.getRepository(User);
-export const createPoll : RequestHandler = async (
+export const createPoll: RequestHandler = async (
   req,
   res,
   next
-):Promise<void> => {
+): Promise<void> => {
   const { title, description, options, startTime, endTime, isAnonymous } = req.body;
-   const userId = (req as AuthenticatedRequest).user?.id;
-   const user = await userRepository.findOneBy({ id: userId });
+  const userId = (req as AuthenticatedRequest).user?.id;
 
-if (!user) {
-  res.status(401).json({ success: false, message: 'User not found' });
-  return;
-}
   if (!userId) {
     res.status(401).json({
       success: false,
@@ -27,7 +24,13 @@ if (!user) {
     });
     return;
   }
-  // ✅ Validate date fields
+
+  const user = await userRepository.findOneBy({ id: userId });
+  if (!user) {
+    res.status(401).json({ success: false, message: 'User not found' });
+    return;
+  }
+
   if (!startTime || !endTime || isNaN(Date.parse(startTime)) || isNaN(Date.parse(endTime))) {
     res.status(400).json({
       success: false,
@@ -35,13 +38,20 @@ if (!user) {
     });
     return;
   }
+
   try {
     const pollRepository = AppDataSource.getRepository(Poll);
 
     const poll = new Poll();
     poll.title = title;
     poll.description = description;
-    poll.options = options;
+
+    // Convert string options to object with voteCount
+    poll.options = options.map((name: string) => ({
+      name,
+      voteCount: 0,
+    }));
+
     poll.code = generatePollCode();
     poll.startTime = new Date(startTime);
     poll.endTime = new Date(endTime);
@@ -212,3 +222,49 @@ if (!poll.createdBy || poll.createdBy.id !== userId) {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+export const getPolls=asyncWrapper(async(
+  req:Request,
+  res:Response
+)=>
+
+{
+  const polls=await AppDataSource.getRepository(Poll).find();
+  res.status(200).json({
+    success: true,
+    message:"All polls fetched successfully",
+    data: {
+      size:polls.length,
+      polls},
+  });
+})
+
+export const deletePoll: RequestHandler = async (req, res): Promise<void> => {
+  const pollId = req.params.pollId;
+  const userId = (req as AuthenticatedRequest).user?.id;
+
+  try {
+    const pollRepo = AppDataSource.getRepository(Poll);
+    const poll = await pollRepo.findOne({
+      where: { id: pollId }
+    });
+
+    if (!poll) {
+      res.status(404).json({ success: false, message: 'Poll not found' });
+      return;
+    }
+
+    // // Check if user is the creator of the poll
+    // if (!poll.createdBy || poll.createdBy.id !== userId) {
+    //   res.status(403).json({ success: false, message: 'You are not allowed to delete this poll' });
+    //   return;
+    // }
+
+    // Delete the poll
+    await pollRepo.remove(poll);
+
+    res.status(200).json({ success: true, message: 'Poll deleted successfully' });
+  } catch (error) {
+    console.error('Delete poll error:', error);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+}
