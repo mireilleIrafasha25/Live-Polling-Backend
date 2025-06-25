@@ -112,7 +112,7 @@ export const SignIn = asyncWrapper(async (
      });
 
     if (!user) return next(new BadRequestError('Invalid credentials'));
-    // if (!user.verified) return next(new UnauthorizedError('Please verify your account first'));
+    if (!user.verified) return next(new UnauthorizedError('Please verify your account first'));
     const isPasswordValid = await bcrypt.compare(req.body.password, user.password);
     if (!isPasswordValid) return next(new BadRequestError('Invalid password'));
 
