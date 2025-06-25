@@ -31,7 +31,9 @@ export class Poll {
   @Column({ default: true })
   isActive!: boolean;
 
-  @ManyToOne(() => User, user => user.polls, { eager: true }) // eager=true optional
+  @ManyToOne(() => User, user => user.polls, {
+    onDelete: "SET NULL",
+    eager: true }) // eager=true optional
   @JoinColumn({ name: 'createdBy' })
   createdBy!: User;
 }

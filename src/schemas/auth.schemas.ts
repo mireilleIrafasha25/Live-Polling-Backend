@@ -36,8 +36,8 @@ export const resetPasswordSchema = z.object({
 });
 
 export const verifyEmailSchema = z.object({
-  params: z.object({
-    token: z.string().min(1, 'Token is required')
+  body: z.object({
+    otp: z.number().int().min(100000, 'OTP must be a 6-digit number').max(999999, 'OTP must be a 6-digit number'),
   })
 });
 

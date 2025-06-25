@@ -43,7 +43,7 @@ export const SignUp = asyncWrapper(async (
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     //otp generator
     const otp = otpGenerator();
-    const otpExpires = new Date(Date.now() + 20 * 60 * 1000); // 5 minutes
+    const otpExpires = new Date(Date.now() + 50 * 60 * 1000); // 5 minutes
      // create new user
     const newUser = userRepo.create({
         name: req.body.name,
@@ -88,15 +88,14 @@ export const Validateopt = asyncWrapper(async (req: Request, res: Response, next
 
     const userRepo = AppDataSource.getRepository(User);
     const user = await userRepo.findOneBy({ otp: req.body.otp });
-
     if (!user) return next(new UnauthorizedError('Invalid OTP'));
+     console.log(user.otpExpires.getTime(), Date.now());
     if (user.otpExpires.getTime() < Date.now()) return next(new UnauthorizedError('OTP expired'));
-
+   
+    if (user.verified) return next(new UnauthorizedError('User already verified'));
     user.verified = true;
     await userRepo.save(user);
-
     // const token = jwt.sign({ email: user.email, role: user.role }, process.env.JWT_SECRET_KEY!, { expiresIn: '1h' });
-
     res.status(200).json({ message: 'User account verified!', });
 });
 
@@ -112,8 +111,8 @@ export const SignIn = asyncWrapper(async (
      where: { email: req.body.email },
      });
 
-    if (!user) return next(new BadRequestError('Invalid credentials or account not verified'));
-
+    if (!user) return next(new BadRequestError('Invalid credentials'));
+    // if (!user.verified) return next(new UnauthorizedError('Please verify your account first'));
     const isPasswordValid = await bcrypt.compare(req.body.password, user.password);
     if (!isPasswordValid) return next(new BadRequestError('Invalid password'));
 
@@ -240,18 +239,22 @@ export const updateUser = async (req: Request, res: Response, next: NextFunction
     res.status(200).json({ message: 'User updated successfully', user: updatedUser });
 };
 
-export const deleteUser = async (req: Request, res: Response,next:NextFunction) => {
+export const deleteUser = async (req:AuthenticatedRequest, res: Response,next:NextFunction) => {
     try{
     const id = req.params.id;
     const userRepo = AppDataSource.getRepository(User);
-    const user = await userRepo.findOneBy({ id });
+    const user = await userRepo.findOneBy({id});
 
-    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!user) 
+        { res.status(404).json({ message: 'User not found' });
+    return
+}
     await userRepo.remove(user);
     res.status(200).json({ message: 'User deleted successfully' });}
     catch(err)
     {
-        return next(err)
+      return next(err)
+  
     }
 };
 
