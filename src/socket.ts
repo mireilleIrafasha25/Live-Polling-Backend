@@ -1,27 +1,32 @@
-// src/socket.ts
-import { Server } from 'socket.io'
+// socket.ts
+import { Server } from 'http';
+import { WebSocketServer } from 'ws';
 
-export const initSocket = (httpServer: any) => {
-  const io = new Server(httpServer, {
-    cors: {
-      origin: '*',
-    },
-  })
+let wss: WebSocketServer;
 
-  io.on('connection', (socket) => {
-    console.log('User connected:', socket.id)
+export const initSocket = (server: Server) => {
+  wss = new WebSocketServer({ server });
 
-    socket.on('join-poll', (pollId) => {
-      socket.join(pollId)
-    })
+  wss.on('connection', (socket:any) => {
+    console.log('🔌 A client connected to WebSocket');
 
-    socket.on('new-vote', (pollId, data) => {
-      // Send vote update to all clients in that poll room
-      io.to(pollId).emit('vote-updated', data)
-    })
+    socket.send(JSON.stringify({ message: 'Connected to WebSocket server' }));
 
-    socket.on('disconnect', () => {
-      console.log('User disconnected:', socket.id)
-    })
-  })
-}
+    socket.on('message', (message:any) => {
+      console.log('📨 Message from client:', message.toString());
+
+      // Example: Broadcast message to all clients
+      wss.clients.forEach((client:any) => {
+        if (client.readyState === client.OPEN) {
+          client.send(message.toString());
+        }
+      });
+    });
+
+    socket.on('close', () => {
+      console.log(' Client disconnected');
+    });
+  });
+};
+
+export const getWss = () => wss;

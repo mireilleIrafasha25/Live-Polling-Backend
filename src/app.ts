@@ -14,8 +14,8 @@ import { pollExpirationJob } from './utils/pollExpirationDate';
 dotenv.config();
 
 const app: Express = express();
-const server=http.createServer()
-initSocket(server);
+ const server=http.createServer()
+ initSocket(server);
 const PORT=Number(process.env.PORT);
 
 async function loadDocumentation() {
@@ -58,21 +58,23 @@ app.use(errorHandler);
 
 // Start the server
 const startServer = async () => {
-    try {
-      // Initialize db connection
-      await InitializeDatabase();
-      //check pool expiration
-      pollExpirationJob();
-      // Start Express server
-     app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on http://0.0.0.0:${PORT}`);
-});
+  try {
+    await InitializeDatabase(); // DB Connection
+    pollExpirationJob();        // Check expired polls
 
-    } catch (error) {
-      console.error('Failed to start server:', error);
-      process.exit(1);
-    }
-  };
+    const server = http.createServer(app); // 🧠 HTTP wrapper
+    initSocket(server);                    // 🔌 WebSocket connection
+
+    server.listen(PORT, '0.0.0.0', () => {
+      console.log(`Server running on http://0.0.0.0:${PORT}`);
+    });
+
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
   
   // Run the server
   startServer();
